@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cross-env NODE_EXTRA_CA_CERTS=\"D:\\Aezion\\QLER\\auth-api-main\\intermediate.pem\" node index.js"
+    "start": "cross-env NODE_EXTRA_CA_CERTS=./intermediate.pem node index.js"
   },
   "author": "Zoom Video Communications, Inc.",
   "contributors": [
