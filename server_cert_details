@@ -1,0 +1,136 @@
+CONNECTED(00000188)
+---
+Certificate chain
+ 0 s:CN = devaz.qlerview.com
+   i:C = GB, ST = Greater Manchester, L = Salford, O = Sectigo Limited, CN = Sectigo RSA Domain Validation Secure Server CA
+---
+Server certificate
+-----BEGIN CERTIFICATE-----
+MIIGRjCCBS6gAwIBAgIRAMPrqr9D8adweJlNcnDJ0KcwDQYJKoZIhvcNAQELBQAw
+gY8xCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAO
+BgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGltaXRlZDE3MDUGA1UE
+AxMuU2VjdGlnbyBSU0EgRG9tYWluIFZhbGlkYXRpb24gU2VjdXJlIFNlcnZlciBD
+QTAeFw0yMzA2MDEwMDAwMDBaFw0yNDA2MzAyMzU5NTlaMB0xGzAZBgNVBAMTEmRl
+dmF6LnFsZXJ2aWV3LmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB
+API1mgyxLUl2rbc9l2mEWRc7jI32VK1Kp3S6vally3Pyngd+YeMsxWlm4LhbjsoL
+V2kOelsOlCnFTRfrF3KsgI3SYtBqljes0oM+JxTaHkNlKO3g6RBaYuLUIFwqKpCR
+FAjui8mKPTCA+wbmtCXiHqiScVu/qAB8n+zOplutUwiCAHl7XcqC3w/Mrvt8vROQ
+vusRbAMMFwZSa9SpD3jhUC5qwJ+wvVBLcYAW6fno9LVIGA7O61R8mGmBRm66jKEZ
+udVFLc22u4BYvxh4r2vOTFaFfiIqiWv9S8E7Xtp9l2gm0+D1gxrQLW9h5IhV4kIQ
+P3IZVMb9mHpEYGLpj9v9Vh0CAwEAAaOCAwwwggMIMB8GA1UdIwQYMBaAFI2MXsRU
+rYrhd+mb+ZsF4bgBjWHhMB0GA1UdDgQWBBQjLrhyhZr08uQCjjBKea9cjeIFNjAO
+BgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEFBQcD
+AQYIKwYBBQUHAwIwSQYDVR0gBEIwQDA0BgsrBgEEAbIxAQICBzAlMCMGCCsGAQUF
+BwIBFhdodHRwczovL3NlY3RpZ28uY29tL0NQUzAIBgZngQwBAgEwgYQGCCsGAQUF
+BwEBBHgwdjBPBggrBgEFBQcwAoZDaHR0cDovL2NydC5zZWN0aWdvLmNvbS9TZWN0
+aWdvUlNBRG9tYWluVmFsaWRhdGlvblNlY3VyZVNlcnZlckNBLmNydDAjBggrBgEF
+BQcwAYYXaHR0cDovL29jc3Auc2VjdGlnby5jb20wNQYDVR0RBC4wLIISZGV2YXou
+cWxlcnZpZXcuY29tghZ3d3cuZGV2YXoucWxlcnZpZXcuY29tMIIBfgYKKwYBBAHW
+eQIEAgSCAW4EggFqAWgAdgB2/4g/Crb7lVHCYcz1h7o0tKTNuyncaEIKn+ZnTFo6
+dAAAAYh3daawAAAEAwBHMEUCIQDBoAVS1kQOscL9AU5zXcnCdWUFqTzASZpMeml8
+LRo5MgIgWSMdP/mK93zOO7Lus36eY9+rkr71/5Dx63LQUDGgr+IAdwDatr9rP7W2
+Ip+bwrtca+hwkXFsu1GEhTS9pD0wSNf7qwAAAYh3dacKAAAEAwBIMEYCIQDppe88
+lMM7FImVl6TbtG3ZMqvhF9lxm+/bHtZZPuT4qwIhAK1vqQsO0u1t8zEpcxPUvqk0
+kCRzwYqMZ4az9kzgEUiHAHUA7s3QZNXbGs7FXLedtM0TojKHRny87N7DUUhZRnEf
+tZsAAAGId3Wm2AAABAMARjBEAiAwHm7TOyqpmVu0oJcNeFA7q5dhmOVDtzsb/O3O
+Le78QAIgVaPVTBaCqxH7YscC0iSt4W91q7qsRqc7+FLrCZ+lOk0wDQYJKoZIhvcN
+AQELBQADggEBADX+t5h+vy+n5DwEnWdPSBvagQOdm/7/8oliHTiZ7mAP1rHzZ+ps
+RbJa+ia+L+WWjnIkortdwwucoo72Eb5NrLToXUA2pa6Y8Qf/j6fmACCtjUx2phtv
+UMjNwkd237Doex7BlutWqNzE1gxpMeDvkJZgmP98gPnbFA34OtHRZri0dsu8H0rv
+1oGPyaP8qz62/EtGjpbo4ImE2MGmokTP6r76Z2QBtgvPVuKqd9q/PE3D7IrRwoWr
+xmhIgksR1VjVqTagV1oP1knwvGVyXHuu2LOhw7BGWfFrmZGhVnswwPNkXFfqfDAC
+Y/fGXd2PsqKA+UMoHSzN2lXJbPCB6imKQkU=
+-----END CERTIFICATE-----
+subject=CN = devaz.qlerview.com
+
+issuer=C = GB, ST = Greater Manchester, L = Salford, O = Sectigo Limited, CN = Sectigo RSA Domain Validation Secure Server CA
+
+---
+No client certificate CA names sent
+Peer signing digest: SHA256
+Peer signature type: RSA-PSS
+Server Temp Key: X25519, 253 bits
+---
+SSL handshake has read 2166 bytes and written 400 bytes
+Verification error: unable to verify the first certificate
+---
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Server public key is 2048 bit
+Secure Renegotiation IS NOT supported
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+Early data was not sent
+Verify return code: 21 (unable to verify the first certificate)
+---
+---
+Post-Handshake New Session Ticket arrived:
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_256_GCM_SHA384
+    Session-ID: EB5EA91DB897F65E0459087645CA105E5F82311C8CEC9F42741719B03E520E18
+    Session-ID-ctx: 
+    Resumption PSK: EEEE0FEE297B3782AECC7451E500B9264542C10BB11F4033002EB4DB7EFAE2E23480EB886096F5D7C76C69E98040E9E7
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 300 (seconds)
+    TLS session ticket:
+    0000 - 45 c6 2d 9f aa ab 32 2a-d0 23 92 d5 ce 66 2c 08   E.-...2*.#...f,.
+    0010 - 2e 52 d0 52 01 8d aa c2-3e 26 9a 24 94 1c 27 c1   .R.R....>&.$..'.
+    0020 - 1f f6 5c c8 09 da 68 ac-a6 0c 39 6a aa 5e 9d e5   ..\...h...9j.^..
+    0030 - 04 6f 3e 1d 30 a4 2b 00-2a 23 5f 7e df a2 e5 bf   .o>.0.+.*#_~....
+    0040 - e1 cb 38 f7 72 71 2e 07-09 a3 00 eb 6d aa 4e d6   ..8.rq......m.N.
+    0050 - e1 ba d6 c6 06 45 e4 17-0c 21 85 a9 0b 00 16 1b   .....E...!......
+    0060 - c9 9c e5 f8 0a 60 60 f3-46 59 ec 80 f6 ff 19 e1   .....``.FY......
+    0070 - f2 15 cf 80 27 16 cd 7a-6c 37 8a cf 46 e3 1f 8d   ....'..zl7..F...
+    0080 - 86 03 ba a6 89 5e de 0b-7f 9c 0b a1 7a 58 e5 80   .....^......zX..
+    0090 - 9c a4 8d 68 46 00 de 01-f5 d0 eb cd d7 0a 14 6b   ...hF..........k
+    00a0 - ac 0a 19 f2 80 e4 e5 0c-8c 2c dd 67 7a 0d 5a 7b   .........,.gz.Z{
+    00b0 - b1 53 21 a1 99 1f b5 dd-79 51 50 d2 72 49 3b 4c   .S!.....yQP.rI;L
+    00c0 - b3 b6 ef 8e fc 52 da 3d-8e 0b cd ab bc 00 57 d1   .....R.=......W.
+    00d0 - 44 60 0d ed ff c1 6d b7-ea 86 6a 38 95 5c 63 e7   D`....m...j8.\c.
+
+    Start Time: 1691680111
+    Timeout   : 7200 (sec)
+    Verify return code: 21 (unable to verify the first certificate)
+    Extended master secret: no
+    Max Early Data: 0
+---
+read R BLOCK
+---
+Post-Handshake New Session Ticket arrived:
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_256_GCM_SHA384
+    Session-ID: AA9BF211FD788183C7272492F111CE0A70F6909064ECD1D1AEF2330A9DC7349E
+    Session-ID-ctx: 
+    Resumption PSK: 9E436CFE42BC2899457CD9E4922C9A95D4EA442A0DF94A06635639B5F319F4436D64C6234190E468D688463B20449AB8
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 300 (seconds)
+    TLS session ticket:
+    0000 - 45 c6 2d 9f aa ab 32 2a-d0 23 92 d5 ce 66 2c 08   E.-...2*.#...f,.
+    0010 - 9e 1f 87 69 2f 04 76 d1-0d 32 8a 94 fb 39 96 09   ...i/.v..2...9..
+    0020 - 7c 41 55 f4 b5 4b 75 03-1b a9 94 93 67 9a 92 7f   |AU..Ku.....g...
+    0030 - 8d 8a dc c0 61 e5 63 75-89 8b ec 46 28 48 35 39   ....a.cu...F(H59
+    0040 - 94 c2 0a 3f 1c ca 7c 83-6e ac 41 da 48 bd 75 61   ...?..|.n.A.H.ua
+    0050 - 21 3c 11 fb fd 08 26 ce-8c d4 ad 38 85 38 94 85   !<....&....8.8..
+    0060 - 92 eb 92 8b ac ef ee ea-7b 67 61 40 55 10 5b 05   ........{ga@U.[.
+    0070 - dd ea 66 24 ce a1 45 f6-fd a6 c2 de 3c d4 14 5e   ..f$..E.....<..^
+    0080 - 39 42 54 37 cb 53 c7 77-08 e3 48 b8 08 b3 02 cf   9BT7.S.w..H.....
+    0090 - 87 14 e6 83 a6 3d b4 ee-3b 1d f6 ae b5 bd 5a 3b   .....=..;.....Z;
+    00a0 - ec ee 2d 29 d6 88 a9 f0-8a 6c c1 e7 82 34 2d 8c   ..-).....l...4-.
+    00b0 - ef f7 7f 06 19 49 60 98-7c 17 ce 5e 8e 7a 2d 2b   .....I`.|..^.z-+
+    00c0 - 1f f3 1d 4e 14 49 db 2b-96 8f de 8b 40 b5 86 85   ...N.I.+....@...
+    00d0 - 7a 69 8c 8c 23 7d 09 e4-ad 8b 09 86 fa 81 7b 14   zi..#}........{.
+
+    Start Time: 1691680111
+    Timeout   : 7200 (sec)
+    Verify return code: 21 (unable to verify the first certificate)
+    Extended master secret: no
+    Max Early Data: 0
+---
+read R BLOCK
+closed

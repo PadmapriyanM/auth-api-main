@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "cross-env NODE_EXTRA_CA_CERTS=\"D:\\Aezion\\QLER\\auth-api-main\\intermediate.pem\" node index.js"
   },
   "author": "Zoom Video Communications, Inc.",
   "contributors": [
@@ -15,8 +15,10 @@
   ],
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.4.0",
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^8.2.0",
     "express": "^4.18.2",
     "jsrsasign": "^10.5.25",

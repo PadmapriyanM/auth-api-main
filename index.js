@@ -8,6 +8,7 @@ const KJUR = require("jsrsasign");
 const app = express();
 const https = require("https").Server(app);
 const port = process.env.PORT || 4000;
+const Vtiger = require("./Utils/VtigerService");
 
 app.use(bodyParser.json(), cors());
 app.options("*", cors());
@@ -59,6 +60,7 @@ const ingredients = [
 app.get("/test", (req, res) => {
     res.send(ingredients);
 });
+
 const server = app.listen(port, () => console.log(`Zoom Meeting SDK Auth Endpoint Sample Node.js listening on port ${port}!`));
 
 const socketIO = require("socket.io")(https, {
@@ -108,6 +110,13 @@ socketIO.on("connection", (socket) => {
             const result = isWithin10Seconds(startTime, endTime);
             console.log(result, "startTime", new Date(zoom.time), "endTime", new Date());
             if (!result) {
+                Vtiger.UpdateSessionStatus(zoom.token, zoom.sessionId)
+                    .then((response) => console.log(response))
+                    .catch((response) => console.log(response))
+                    .finally(() => {
+                        let index = connectedProviders.findIndex((ele) => ele.sessionId == zoom.sessionId);
+                        connectedProviders.splice(index, 1);
+                    });
                 console.log(zoom.sessionId + "disconnect");
             }
         });
