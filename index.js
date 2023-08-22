@@ -79,7 +79,12 @@ socketIO.on("connection", (socket) => {
     socket.on("message", function (data) {
         console.log("Message received ", data);
 
-        socketIO.emit("message", data);
+        Vtiger.SendMessage(data.token, data.sessionId, data.userId, data.message).then((res) => {
+            console.log(res);
+            if (res.statusCode === 200) {
+                socketIO.emit("message", data);
+            }
+        });
     });
 
     socket.on("zoomcall", function (data) {
@@ -117,6 +122,7 @@ socketIO.on("connection", (socket) => {
                         let index = connectedProviders.findIndex((ele) => ele.sessionId == zoom.sessionId);
                         connectedProviders.splice(index, 1);
                     });
+                socketIO.emit("abandonedzoom", zoom);
                 console.log(zoom.sessionId + "disconnect");
             }
         });
