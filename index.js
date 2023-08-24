@@ -58,6 +58,7 @@ const ingredients = [
 ];
 
 app.get("/test", (req, res) => {
+    console.log(req.socket.remoteAddress);
     res.send(ingredients);
 });
 
@@ -109,8 +110,8 @@ socketIO.on("connection", (socket) => {
     const heartbeatCheckInterval = setInterval(() => {
         console.log(connectedProviders);
         connectedProviders.forEach((zoom) => {
-            const startTime = new Date(zoom.time).getTime(); // Replace with your timestamp in ISO 8601 format
-            const endTime = new Date(new Date().toISOString()).getTime(); // Replace with your timestamp in ISO 8601 format
+            const startTime = new Date(zoom.time).getTime();
+            const endTime = new Date(new Date().toISOString()).getTime();
 
             const result = isWithin10Seconds(startTime, endTime);
             console.log(result, "startTime", new Date(zoom.time), "endTime", new Date());
@@ -132,6 +133,7 @@ socketIO.on("connection", (socket) => {
         if (connectedProviders.map((ele) => ele.sessionId).includes(data.sessionId)) {
             let index = connectedProviders.findIndex((ele) => ele.sessionId == data.sessionId);
             connectedProviders.splice(index, 1);
+            socketIO.emit("zoomendsuccess", data);
         }
         clearInterval(heartbeatCheckInterval);
     });
