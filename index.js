@@ -80,7 +80,7 @@ socketIO.on("connection", (socket) => {
     socket.on("message", function (data) {
         console.log("Message received ", data);
 
-        Vtiger.SendMessage(data.token, data.sessionId, data.userId, data.message).then((res) => {
+        Vtiger.SendMessage(data.token, data.sessionId, data.userId, data.message, data.env).then((res) => {
             console.log(res);
             if (res.statusCode === 200) {
                 socketIO.emit("message", data);
@@ -116,7 +116,7 @@ socketIO.on("connection", (socket) => {
             const result = isWithin10Seconds(startTime, endTime);
             console.log(result, "startTime", new Date(zoom.time), "endTime", new Date());
             if (!result) {
-                Vtiger.UpdateSessionStatus(zoom.token, zoom.sessionId)
+                Vtiger.UpdateSessionStatus(zoom.token, zoom.sessionId, zoom.env)
                     .then((response) => console.log(response))
                     .catch((response) => console.log(response))
                     .finally(() => {

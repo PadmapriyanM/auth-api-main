@@ -1,3 +1,4 @@
 {
-    "CRM_ENDPOINT": "https://devaz.qlerview.com/modules/Mobile/api.php"
+    "CRM_ENDPOINT": "https://devaz.qlerview.com/modules/Mobile/api.php",
+    "STAGE_ENDPOINT": "https://stage.qlerview.com/modules/Mobile/api.php"
 }
