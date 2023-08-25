@@ -9,7 +9,7 @@ const UpdateSessionStatus = (token, sessionId, env) => {
             message: "",
         };
         if (env) {
-            let url = env == "dev" ? config.CRM_ENDPOINT : config.STAGE_ENDPOINT;
+            let url = env == "dev" ? config.STAGE_ENDPOINT : config.CRM_ENDPOINT;
             axios
                 .post(url, {
                     _operation: "saveRecord",
@@ -56,7 +56,7 @@ const SendMessage = (token, sessionId, userId, message, env) => {
             message: "",
         };
         if (env) {
-            let url = env == "dev" ? config.CRM_ENDPOINT : config.STAGE_ENDPOINT;
+            let url = env == "dev" ? config.STAGE_ENDPOINT : config.CRM_ENDPOINT;
             axios
                 .post(url, {
                     _operation: "createcommentfromchat",
