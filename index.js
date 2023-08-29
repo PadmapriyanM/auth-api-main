@@ -4,16 +4,60 @@ const bodyParser = require("body-parser");
 const crypto = require("crypto");
 const cors = require("cors");
 const KJUR = require("jsrsasign");
+const qs = require("query-string");
 
 const app = express();
 const https = require("https").Server(app);
 const port = process.env.PORT || 4000;
 const Vtiger = require("./Utils/VtigerService");
+const axios = require("axios");
+
+ZOOM_ACCOUNT_ID = process.env.ZOOM_ACCOUNT_ID;
+ZOOM_CLIENT_ID = process.env.ZOOM_CLIENT_ID;
+ZOOM_CLIENT_SECRET = process.env.ZOOM_CLIENT_SECRET;
+
+const ZOOM_OAUTH_ENDPOINT = "https://zoom.us/oauth/token";
 
 app.use(bodyParser.json(), cors());
 app.options("*", cors());
 
-app.post("/", (req, res) => {
+app.post("/zaktoken", async (req, res) => {
+    try {
+        const request = await axios.post(ZOOM_OAUTH_ENDPOINT, qs.stringify({ grant_type: "account_credentials", account_id: ZOOM_ACCOUNT_ID }), {
+            headers: {
+                Authorization: `Basic ${Buffer.from(`${ZOOM_CLIENT_ID}:${ZOOM_CLIENT_SECRET}`).toString("base64")}`,
+            },
+        });
+
+        const response = await request.data;
+        response.userId = req.body.userId;
+        generateZAKToken(response, res);
+    } catch (e) {
+        console.error(e?.message, e?.response?.data);
+        res.status(500).send({ error: JSON.stringify(e) });
+    }
+});
+
+const generateZAKToken = async (data, res) => {
+    const access_token = data.access_token;
+    const userId = data.userId;
+    try {
+        const request = await axios.get(`https://api.zoom.us/v2/users/${userId}/token?type=zak`, {
+            headers: {
+                Authorization: `Bearer ${access_token}`,
+            },
+        });
+
+        const response = await request.data;
+        response.result = "success";
+        response.signature = data.signature;
+        res.send(response);
+    } catch (e) {
+        console.error(e?.message, e?.response?.data);
+    }
+};
+
+app.post("/", async (req, res) => {
     const iat = Math.round(new Date().getTime() / 1000) - 30;
     const exp = iat + 60 * 60 * 2;
 
@@ -32,10 +76,22 @@ app.post("/", (req, res) => {
     const sHeader = JSON.stringify(oHeader);
     const sPayload = JSON.stringify(oPayload);
     const signature = KJUR.jws.JWS.sign("HS256", sHeader, sPayload, process.env.ZOOM_MEETING_SDK_SECRET);
+    if (typeof req.body?.userId == "string" && req.body?.userId.length > 0) {
+        const request = await axios.post(ZOOM_OAUTH_ENDPOINT, qs.stringify({ grant_type: "account_credentials", account_id: ZOOM_ACCOUNT_ID }), {
+            headers: {
+                Authorization: `Basic ${Buffer.from(`${ZOOM_CLIENT_ID}:${ZOOM_CLIENT_SECRET}`).toString("base64")}`,
+            },
+        });
 
-    res.json({
-        signature: signature,
-    });
+        const response = await request.data;
+        response.userId = req.body.userId;
+        response.signature = signature;
+        generateZAKToken(response, res);
+    } else {
+        res.json({
+            signature: signature,
+        });
+    }
 });
 
 const ingredients = [
