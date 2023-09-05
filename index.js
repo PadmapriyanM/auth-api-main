@@ -136,18 +136,23 @@ socketIO.on("connection", (socket) => {
     socket.on("message", function (data) {
         console.log("Message received ", data);
 
-        Vtiger.SendMessage(data.token, data.sessionId, data.userId, data.message, data.env).then((res) => {
-            console.log(res);
-            if (res.statusCode === 200) {
-                socketIO.emit("message", data);
-            }
-        });
+        Vtiger.SendMessage(data.token, data.sessionId, data.userId, data.message, data.env)
+            .then((res) => {
+                console.log(res);
+                if (res.statusCode === 200) {
+                    socketIO.emit("message", data);
+                }
+            })
+            .catch((e) => {
+                console.log(e);
+            });
     });
 
     socket.on("zoomcall", function (data) {
-        if (connectedProviders.map((ele) => ele.sessionId).includes(data.sessionId)) {
+        let isSessionExits = connectedProviders.findIndex((ele) => ele.sessionId == data.sessionId && ele.role == data.role);
+        if (isSessionExits > -1) {
             console.log("updated", data.sessionId);
-            let index = connectedProviders.findIndex((ele) => ele.sessionId == data.sessionId);
+            let index = isSessionExits;
             connectedProviders.splice(index, 1, data);
         } else {
             console.log("pushed", data.sessionId);
@@ -160,7 +165,7 @@ socketIO.on("connection", (socket) => {
         const secondsDifference = timeDifference / 1000; // Convert milliseconds to seconds
 
         console.log(secondsDifference);
-        return secondsDifference <= 30;
+        return secondsDifference <= 15;
     }
 
     const heartbeatCheckInterval = setInterval(() => {
@@ -176,7 +181,7 @@ socketIO.on("connection", (socket) => {
                     .then((response) => console.log(response))
                     .catch((response) => console.log(response))
                     .finally(() => {
-                        let index = connectedProviders.findIndex((ele) => ele.sessionId == zoom.sessionId);
+                        let index = connectedProviders.findIndex((ele) => ele.sessionId == zoom.sessionId && ele.role == zoom.role);
                         connectedProviders.splice(index, 1);
                     });
                 socketIO.emit("abandonedzoom", zoom);
@@ -186,8 +191,9 @@ socketIO.on("connection", (socket) => {
     }, 5000);
 
     socket.on("zoomend", (data) => {
-        if (connectedProviders.map((ele) => ele.sessionId).includes(data.sessionId)) {
-            let index = connectedProviders.findIndex((ele) => ele.sessionId == data.sessionId);
+        let isSessionExits = connectedProviders.findIndex((ele) => ele.sessionId == data.sessionId && ele.role == data.role);
+        if (isSessionExits > -1) {
+            let index = isSessionExits;
             connectedProviders.splice(index, 1);
             socketIO.emit("zoomendsuccess", data);
         }
