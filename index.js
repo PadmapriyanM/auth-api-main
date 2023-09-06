@@ -165,7 +165,7 @@ socketIO.on("connection", (socket) => {
         const secondsDifference = timeDifference / 1000; // Convert milliseconds to seconds
 
         console.log(secondsDifference);
-        return secondsDifference <= 15;
+        return secondsDifference <= 30;
     }
 
     const heartbeatCheckInterval = setInterval(() => {
