@@ -148,6 +148,10 @@ socketIO.on("connection", (socket) => {
             });
     });
 
+    socket.on("vtigerMessage", function (data) {
+        socketIO.emit("vtigerMessage", data);
+    });
+
     socket.on("zoomcall", function (data) {
         let isSessionExits = connectedProviders.findIndex((ele) => ele.sessionId == data.sessionId && ele.role == data.role);
         if (isSessionExits > -1) {
@@ -169,13 +173,12 @@ socketIO.on("connection", (socket) => {
     }
 
     const heartbeatCheckInterval = setInterval(() => {
-        console.log(connectedProviders);
         connectedProviders.forEach((zoom) => {
             const startTime = new Date(zoom.time).getTime();
             const endTime = new Date(new Date().toISOString()).getTime();
 
             const result = isWithin10Seconds(startTime, endTime);
-            console.log(result, "startTime", new Date(zoom.time), "endTime", new Date());
+            console.log(result, "startTime", new Date(new Date(zoom.time).toISOString()), "endTime", new Date());
             if (!result) {
                 Vtiger.UpdateSessionStatus(zoom.token, zoom.sessionId, zoom.env)
                     .then((response) => console.log(response))
@@ -192,9 +195,11 @@ socketIO.on("connection", (socket) => {
 
     socket.on("zoomend", (data) => {
         let isSessionExits = connectedProviders.findIndex((ele) => ele.sessionId == data.sessionId && ele.role == data.role);
+        console.log("zoom end", isSessionExits);
         if (isSessionExits > -1) {
             let index = isSessionExits;
             connectedProviders.splice(index, 1);
+            console.log(connectedProviders, "connectedProviders");
             socketIO.emit("zoomendsuccess", data);
         }
         clearInterval(heartbeatCheckInterval);
