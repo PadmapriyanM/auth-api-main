@@ -179,6 +179,13 @@ socketIO.on("connection", (socket) => {
             const endTime = new Date(new Date().toISOString()).getTime();
 
             const result = isWithin10Seconds(startTime, endTime);
+            if (zoom?.locale) {
+                const a = new Date(zoom.locale).getTime();
+                const b = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" })).getTime();
+                const checkLocale = isWithin10Seconds(a, b);
+                console.log("result", checkLocale);
+                console.log("locale", "starttime", a, "endtime", b);
+            }
             console.log(result, "startTime", startTime, "endTime", endTime);
             console.log("Calculated time", "startTime", new Date(new Date(zoom.time).toISOString()), "endTime", new Date(new Date().toISOString()));
             if (!result) {
