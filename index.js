@@ -178,7 +178,7 @@ socketIO.on("connection", (socket) => {
             const endTime = new Date(new Date().toISOString()).getTime();
 
             const result = isWithin10Seconds(startTime, endTime);
-            console.log(result, "startTime", new Date(new Date(zoom.time).toISOString()), "endTime", new Date());
+            console.log(result, "startTime", new Date(new Date(zoom.time).toISOString()), "endTime",new Date(new Date(zoom.time).toISOString()));
             if (!result) {
                 Vtiger.UpdateSessionStatus(zoom.token, zoom.sessionId, zoom.env)
                     .then((response) => console.log(response))
