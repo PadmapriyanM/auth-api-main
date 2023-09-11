@@ -174,7 +174,7 @@ socketIO.on("connection", (socket) => {
 
     const heartbeatCheckInterval = setInterval(() => {
         connectedProviders.forEach((zoom) => {
-            const startTime = new Date(zoom.time).getTime();
+            const startTime = new Date(new Date(zoom.time).toISOString()).getTime();
             const endTime = new Date(new Date().toISOString()).getTime();
 
             const result = isWithin10Seconds(startTime, endTime);
