@@ -157,6 +157,7 @@ socketIO.on("connection", (socket) => {
         if (isSessionExits > -1) {
             console.log("updated", data.sessionId);
             let index = isSessionExits;
+            console.log(data);
             connectedProviders.splice(index, 1, data);
         } else {
             console.log("pushed", data.sessionId);
