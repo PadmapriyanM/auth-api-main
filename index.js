@@ -211,6 +211,6 @@ socketIO.on("connection", (socket) => {
             console.log(connectedProviders, "connectedProviders");
             socketIO.emit("zoomendsuccess", data);
         }
-        clearInterval(heartbeatCheckInterval);
+        // clearInterval(heartbeatCheckInterval);
     });
 });
