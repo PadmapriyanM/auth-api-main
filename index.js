@@ -131,7 +131,11 @@ socketIO.listen(server);
 let connectedProviders = [];
 
 socketIO.on("connection", (socket) => {
-    console.log(`⚡: ${socket.id} user just connected!`);
+    // console.log(`⚡: ${socket.id} user just connected!`);
+
+    console.log("user id", socket.handshake.auth);
+
+    const userId = socket.handshake?.auth?.userId;
 
     socket.on("message", function (data) {
         console.log("Message received ", data);
@@ -155,62 +159,55 @@ socketIO.on("connection", (socket) => {
     socket.on("zoomcall", function (data) {
         let isSessionExits = connectedProviders.findIndex((ele) => ele.sessionId == data.sessionId && ele.role == data.role);
         if (isSessionExits > -1) {
-            console.log("updated", data.sessionId);
+            console.log("updated", data);
             let index = isSessionExits;
-            console.log(data);
+
             connectedProviders.splice(index, 1, data);
         } else {
-            console.log("pushed", data.sessionId);
+            console.log("pushed", data);
             connectedProviders.push(data);
         }
     });
 
-    function isWithin10Seconds(timestamp1, timestamp2) {
-        const timeDifference = Math.abs(timestamp1 - timestamp2); // Calculate the absolute time difference in milliseconds
-        const secondsDifference = timeDifference / 1000; // Convert milliseconds to seconds
-
-        console.log(secondsDifference);
-        return secondsDifference <= 30;
-    }
-
-    // const heartbeatCheckInterval = setInterval(() => {
-    //     connectedProviders.forEach((zoom) => {
-    //         const startTime = new Date(new Date(zoom.time).toISOString()).getTime();
-    //         const endTime = new Date(new Date().toISOString()).getTime();
-
-    //         const result = isWithin10Seconds(startTime, endTime);
-    //         if (zoom?.locale) {
-    //             const a = new Date(zoom.locale).getTime();
-    //             const b = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" })).getTime();
-    //             const checkLocale = isWithin10Seconds(a, b);
-    //             console.log("result", checkLocale);
-    //             console.log("locale", "starttime", a, "endtime", b);
-    //         }
-    //         console.log(result, "startTime", startTime, "endTime", endTime);
-    //         console.log("Calculated time", "startTime", new Date(new Date(zoom.time).toISOString()), "endTime", new Date(new Date().toISOString()));
-    //         if (!result) {
-    //             Vtiger.UpdateSessionStatus(zoom.token, zoom.sessionId, zoom.env)
-    //                 .then((response) => console.log(response))
-    //                 .catch((response) => console.log(response))
-    //                 .finally(() => {
-    //                     let index = connectedProviders.findIndex((ele) => ele.sessionId == zoom.sessionId && ele.role == zoom.role);
-    //                     connectedProviders.splice(index, 1);
-    //                 });
-    //             socketIO.emit("abandonedzoom", zoom);
-    //             console.log(zoom.sessionId + "disconnect");
-    //         }
-    //     });
-    // }, 5000);
+    socket.on("zoomendall", function (data) {
+        if (data.sessionId) {
+            let filterData = connectedProviders.filter((ele) => ele.sessionId != data.sessionId);
+            connectedProviders = [...filterData];
+        }
+    });
 
     socket.on("zoomend", (data) => {
         let isSessionExits = connectedProviders.findIndex((ele) => ele.sessionId == data.sessionId && ele.role == data.role);
-        console.log("zoom end", isSessionExits);
+        console.log("zoom end", isSessionExits > -1 ? "true" : "false");
         if (isSessionExits > -1) {
             let index = isSessionExits;
+            console.log(connectedProviders[index], "connectedProviders");
             connectedProviders.splice(index, 1);
-            console.log(connectedProviders, "connectedProviders");
+
             socketIO.emit("zoomendsuccess", data);
         }
-        // clearInterval(heartbeatCheckInterval);
+    });
+
+    socket.on("disconnect", async function (data) {
+        // socket is disconnected
+        console.log("user disconnect", userId);
+        
+        let isSessionExits = connectedProviders.findIndex((ele) => ele.userId == userId);
+
+        console.log("isSessionExits", isSessionExits > -1 ? "true" : "false");
+        if (isSessionExits > -1) {
+            const session = connectedProviders[isSessionExits];
+            console.log("abandoned", session);
+
+            Vtiger.UpdateSessionStatus(session.token, session.sessionId, session.env)
+                .then((response) => console.log(response))
+                .catch((response) => console.log(response))
+                .finally(() => {
+                    let filterData = connectedProviders.filter((ele) => ele.sessionId != session.sessionId);
+                    connectedProviders = [...filterData];
+                });
+            socketIO.emit("abandonedzoom", session);
+            console.log(session.sessionId + "disconnect");
+        }
     });
 });
