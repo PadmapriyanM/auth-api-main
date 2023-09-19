@@ -21,76 +21,135 @@ const ZOOM_OAUTH_ENDPOINT = "https://zoom.us/oauth/token";
 app.use(bodyParser.json(), cors());
 app.options("*", cors());
 
-app.post("/zaktoken", async (req, res) => {
-    try {
-        const request = await axios.post(ZOOM_OAUTH_ENDPOINT, qs.stringify({ grant_type: "account_credentials", account_id: ZOOM_ACCOUNT_ID }), {
-            headers: {
-                Authorization: `Basic ${Buffer.from(`${ZOOM_CLIENT_ID}:${ZOOM_CLIENT_SECRET}`).toString("base64")}`,
-            },
-        });
+const AccessToken = async () => {
+    const request = await axios.post(ZOOM_OAUTH_ENDPOINT, qs.stringify({ grant_type: "account_credentials", account_id: ZOOM_ACCOUNT_ID }), {
+        headers: {
+            Authorization: `Basic ${Buffer.from(`${ZOOM_CLIENT_ID}:${ZOOM_CLIENT_SECRET}`).toString("base64")}`,
+        },
+    });
+    const data = await request.data;
+    return data;
+};
 
-        const response = await request.data;
-        response.userId = req.body.userId;
-        generateZAKToken(response, res);
-    } catch (e) {
-        console.error(e?.message, e?.response?.data);
-        res.status(500).send({ error: JSON.stringify(e) });
+const ZoomApi = async (url, Method, bodyData, paramsData) => {
+    const URL = "https://api.zoom.us/v2/" + url;
+
+    const ZoomAuth = await AccessToken();
+
+    let headerComponent = {
+        method: Method,
+        url: URL,
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "*/*",
+            Connection: "keep-alive",
+            Authorization: `Bearer ${ZoomAuth.access_token}`,
+        },
+    };
+    if (bodyData) {
+        headerComponent.data = bodyData;
     }
-});
+    if (paramsData) {
+        headerComponent.params = paramsData;
+    }
 
-const generateZAKToken = async (data, res) => {
-    const access_token = data.access_token;
+    const request = await axios(headerComponent);
+
+    const response = await request;
+
+    return response;
+};
+// app.post("/zaktoken", async (req, res) => {
+//     try {
+//         const request = await axios.post(ZOOM_OAUTH_ENDPOINT, qs.stringify({ grant_type: "account_credentials", account_id: ZOOM_ACCOUNT_ID }), {
+//             headers: {
+//                 Authorization: `Basic ${Buffer.from(`${ZOOM_CLIENT_ID}:${ZOOM_CLIENT_SECRET}`).toString("base64")}`,
+//             },
+//         });
+
+//         const response = await request.data;
+//         response.userId = req.body.userId;
+//         generateZAKToken(response, res);
+//     } catch (e) {
+//         console.error(e?.message, e?.response?.data);
+//         res.status(500).send({ error: JSON.stringify(e) });
+//     }
+// });
+
+const generateZAKToken = async (data) => {
     const userId = data.userId;
-    try {
-        const request = await axios.get(`https://api.zoom.us/v2/users/${userId}/token?type=zak`, {
-            headers: {
-                Authorization: `Bearer ${access_token}`,
-            },
-        });
 
-        const response = await request.data;
-        response.result = "success";
-        response.signature = data.signature;
-        res.send(response);
-    } catch (e) {
-        console.error(e?.message, e?.response?.data);
-    }
+    const request = await ZoomApi(`users/${userId}/token`, "GET", null, { type: "zak" });
+
+    const response = await request.data;
+    response.result = "success";
+    response.signature = data.signature;
+    return response;
+};
+
+const getMeetingDetails = async (data) => {
+    const meetingId = data.meetingId;
+
+    const request = await ZoomApi(`past_meetings/${meetingId}`, "GET", null, null);
+
+    const response = await request.data;
+    response.result = "success";
+
+    return response;
 };
 
 app.post("/", async (req, res) => {
-    const iat = Math.round(new Date().getTime() / 1000) - 30;
-    const exp = iat + 60 * 60 * 2;
+    try {
+        const iat = Math.round(new Date().getTime() / 1000) - 30;
+        const exp = iat + 60 * 60 * 2;
 
-    const oHeader = { alg: "HS256", typ: "JWT" };
+        const oHeader = { alg: "HS256", typ: "JWT" };
 
-    const oPayload = {
-        sdkKey: process.env.ZOOM_MEETING_SDK_KEY,
-        mn: req.body.meetingNumber,
-        role: req.body.role,
-        iat: iat,
-        exp: exp,
-        appKey: process.env.ZOOM_MEETING_SDK_KEY,
-        tokenExp: iat + 60 * 60 * 2,
-    };
+        const oPayload = {
+            sdkKey: process.env.ZOOM_MEETING_SDK_KEY,
+            mn: req.body.meetingNumber,
+            role: req.body.role,
+            iat: iat,
+            exp: exp,
+            appKey: process.env.ZOOM_MEETING_SDK_KEY,
+            tokenExp: iat + 60 * 60 * 2,
+        };
 
-    const sHeader = JSON.stringify(oHeader);
-    const sPayload = JSON.stringify(oPayload);
-    const signature = KJUR.jws.JWS.sign("HS256", sHeader, sPayload, process.env.ZOOM_MEETING_SDK_SECRET);
-    if (typeof req.body?.userId == "string" && req.body?.userId.length > 0) {
-        const request = await axios.post(ZOOM_OAUTH_ENDPOINT, qs.stringify({ grant_type: "account_credentials", account_id: ZOOM_ACCOUNT_ID }), {
-            headers: {
-                Authorization: `Basic ${Buffer.from(`${ZOOM_CLIENT_ID}:${ZOOM_CLIENT_SECRET}`).toString("base64")}`,
-            },
-        });
+        const sHeader = JSON.stringify(oHeader);
+        const sPayload = JSON.stringify(oPayload);
+        const signature = KJUR.jws.JWS.sign("HS256", sHeader, sPayload, process.env.ZOOM_MEETING_SDK_SECRET);
+        if (typeof req.body?.userId == "string" && req.body?.userId.length > 0) {
+            const Data = {
+                userId: req.body.userId,
+                signature: signature,
+            };
+            const response = await generateZAKToken(Data, res);
+            res.send(response);
+        } else {
+            res.json({
+                signature: signature,
+            });
+        }
+    } catch (e) {
+        res.status(500).send({ error: e });
+    }
+});
 
-        const response = await request.data;
-        response.userId = req.body.userId;
-        response.signature = signature;
-        generateZAKToken(response, res);
-    } else {
-        res.json({
-            signature: signature,
-        });
+app.post("/meetingdetails", async (req, res) => {
+    try {
+        if (typeof req.body?.meetingId == "string" && req.body?.meetingId.length > 0) {
+            const Data = {
+                meetingId: req.body.meetingId,
+            };
+            const response = await getMeetingDetails(Data);
+            res.send(response);
+        } else {
+            res.status(404).send({
+                error: "meeting id missing",
+            });
+        }
+    } catch (e) {
+        res.status(500).send({ error: e });
     }
 });
 
@@ -191,7 +250,7 @@ socketIO.on("connection", (socket) => {
     socket.on("disconnect", async function (data) {
         // socket is disconnected
         console.log("user disconnect", userId);
-        
+
         let isSessionExits = connectedProviders.findIndex((ele) => ele.userId == userId);
 
         console.log("isSessionExits", isSessionExits > -1 ? "true" : "false");
