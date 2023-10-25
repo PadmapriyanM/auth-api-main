@@ -31,6 +31,21 @@ const AccessToken = async () => {
     return data;
 };
 
+/**
+ * The function `ZoomApi` is an asynchronous function that makes API requests to the Zoom API using the
+ * provided URL, method, body data, and parameters data.
+ * @param {string} url - The `url` parameter is the endpoint of the Zoom API that you want to call. For example,
+ * if you want to get a list of users, the `url` parameter would be "users".
+ * @param {string} Method - The `Method` parameter is the HTTP method to be used for the API request, such as
+ * "GET", "POST", "PUT", "DELETE", etc.
+ * @param {Object} bodyData - The `bodyData` parameter is used to pass data in the request body. It is an
+ * optional parameter, so you can omit it if you don't need to send any data in the request body.
+ * @param {Object} paramsData - The `paramsData` parameter is an object that contains any query parameters that
+ * need to be included in the API request. These parameters are typically used to filter or sort the
+ * data returned by the API.
+ * @returns The function `ZoomApi` returns a promise that resolves to the response object from the API
+ * request.
+ */
 const ZoomApi = async (url, Method, bodyData, paramsData) => {
     const URL = "https://api.zoom.us/v2/" + url;
 
@@ -59,22 +74,6 @@ const ZoomApi = async (url, Method, bodyData, paramsData) => {
 
     return response;
 };
-// app.post("/zaktoken", async (req, res) => {
-//     try {
-//         const request = await axios.post(ZOOM_OAUTH_ENDPOINT, qs.stringify({ grant_type: "account_credentials", account_id: ZOOM_ACCOUNT_ID }), {
-//             headers: {
-//                 Authorization: `Basic ${Buffer.from(`${ZOOM_CLIENT_ID}:${ZOOM_CLIENT_SECRET}`).toString("base64")}`,
-//             },
-//         });
-
-//         const response = await request.data;
-//         response.userId = req.body.userId;
-//         generateZAKToken(response, res);
-//     } catch (e) {
-//         console.error(e?.message, e?.response?.data);
-//         res.status(500).send({ error: JSON.stringify(e) });
-//     }
-// });
 
 const generateZAKToken = async (data) => {
     const userId = data.userId;
@@ -93,6 +92,27 @@ const getMeetingDetails = async (data) => {
     const request = await ZoomApi(`past_meetings/${meetingId}`, "GET", null, null);
 
     const response = await request.data;
+    response.result = "success";
+
+    return response;
+};
+
+const EndZoomMeeting = async (meetingId) => {
+    if (!meetingId) {
+        throw new Error("Meeting Id cannot be empty");
+    }
+
+    const request = await ZoomApi(
+        `meetings/${meetingId}/status`,
+        "PUT",
+        {
+            action: "end",
+        },
+        null
+    );
+
+    const response = await request.data;
+
     response.result = "success";
 
     return response;
@@ -248,25 +268,33 @@ socketIO.on("connection", (socket) => {
     });
 
     socket.on("disconnect", async function (data) {
-        // socket is disconnected
-        console.log("user disconnect", userId);
+        try {
+            // socket is disconnected
+            console.log("user disconnect", userId);
 
-        let isSessionExits = connectedProviders.findIndex((ele) => ele.userId == userId);
+            let isSessionExits = connectedProviders.findIndex((ele) => ele.userId == userId);
 
-        console.log("isSessionExits", isSessionExits > -1 ? "true" : "false");
-        if (isSessionExits > -1) {
-            const session = connectedProviders[isSessionExits];
-            console.log("abandoned", session);
+            console.log("isSessionExits", isSessionExits > -1 ? "true" : "false");
+            if (isSessionExits > -1) {
+                const session = connectedProviders[isSessionExits];
+                console.log("abandoned", session);
 
-            Vtiger.UpdateSessionStatus(session.token, session.sessionId, session.env)
-                .then((response) => console.log(response))
-                .catch((response) => console.log(response))
-                .finally(() => {
-                    let filterData = connectedProviders.filter((ele) => ele.sessionId != session.sessionId);
-                    connectedProviders = [...filterData];
-                });
-            socketIO.emit("abandonedzoom", session);
-            console.log(session.sessionId + "disconnect");
+                const SessionUpdate = Vtiger.UpdateSessionStatus(session.token, session.sessionId, session.env);
+
+                const EndZoom = EndZoomMeeting(session?.meetingId);
+
+                socketIO.emit("abandonedzoom", session);
+
+                await Promise.allSettled([SessionUpdate, EndZoom]);
+
+                let filterData = connectedProviders.filter((ele) => ele.sessionId != session.sessionId);
+
+                connectedProviders = [...filterData];
+
+                console.log(session.sessionId + "disconnect");
+            }
+        } catch (e) {
+            console.log("Error", e);
         }
     });
 });
