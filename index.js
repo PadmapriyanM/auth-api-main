@@ -177,7 +177,7 @@ app.post("/meetingdetails", async (req, res) => {
 app.get("/getloc", async (req, res) => {
     try {
         const Ip = requestIp.getClientIp(req);
-        res.status(200).send(Ip);
+        res.status(200).send({ Ipaddress: Ip });
     } catch (e) {
         res.status(500).send({ error: e });
     }
