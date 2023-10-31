@@ -11,6 +11,7 @@ const https = require("https").Server(app);
 const port = process.env.PORT || 4000;
 const Vtiger = require("./Utils/VtigerService");
 const axios = require("axios");
+const requestIp = require("request-ip");
 
 ZOOM_ACCOUNT_ID = process.env.ZOOM_ACCOUNT_ID;
 ZOOM_CLIENT_ID = process.env.ZOOM_CLIENT_ID;
@@ -168,6 +169,15 @@ app.post("/meetingdetails", async (req, res) => {
                 error: "meeting id missing",
             });
         }
+    } catch (e) {
+        res.status(500).send({ error: e });
+    }
+});
+
+app.get("/getloc", async (req, res) => {
+    try {
+        const Ip = requestIp.getClientIp(req);
+        res.status(200).send(Ip);
     } catch (e) {
         res.status(500).send({ error: e });
     }
