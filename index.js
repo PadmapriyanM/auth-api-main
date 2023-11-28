@@ -174,6 +174,22 @@ app.post("/meetingdetails", async (req, res) => {
     }
 });
 
+app.put("/endmetting", async (req, res) => {
+    try {
+        if (typeof req.body?.meetingId == "string" && req.body?.meetingId.length > 0) {
+            const response = await EndZoomMeeting(req.body.meetingId);
+            res.send(response);
+        } else {
+            res.status(404).send({
+                error: "meeting id missing",
+            });
+        }
+    } catch (e) {
+        console.log(e.message);
+        res.status(500).send({ error: e });
+    }
+});
+
 app.get("/getloc", async (req, res) => {
     try {
         const Ip = requestIp.getClientIp(req);
