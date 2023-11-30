@@ -297,28 +297,29 @@ socketIO.on("connection", (socket) => {
         try {
             // socket is disconnected
             console.log("user disconnect", userId);
+            setTimeout(async () => {
+                let isSessionExits = connectedProviders.findIndex((ele) => ele.userId == userId);
 
-            let isSessionExits = connectedProviders.findIndex((ele) => ele.userId == userId);
+                console.log("isSessionExits", isSessionExits > -1 ? "true" : "false");
+                if (isSessionExits > -1) {
+                    const session = connectedProviders[isSessionExits];
+                    console.log("abandoned", session);
 
-            console.log("isSessionExits", isSessionExits > -1 ? "true" : "false");
-            if (isSessionExits > -1) {
-                const session = connectedProviders[isSessionExits];
-                console.log("abandoned", session);
+                    const SessionUpdate = Vtiger.UpdateSessionStatus(session.token, session.sessionId, session.env);
 
-                const SessionUpdate = Vtiger.UpdateSessionStatus(session.token, session.sessionId, session.env);
+                    const EndZoom = EndZoomMeeting(session?.meetingId);
 
-                const EndZoom = EndZoomMeeting(session?.meetingId);
+                    socketIO.emit("abandonedzoom", session);
 
-                socketIO.emit("abandonedzoom", session);
+                    await Promise.allSettled([SessionUpdate, EndZoom]);
 
-                await Promise.allSettled([SessionUpdate, EndZoom]);
+                    let filterData = connectedProviders.filter((ele) => ele.sessionId != session.sessionId);
 
-                let filterData = connectedProviders.filter((ele) => ele.sessionId != session.sessionId);
+                    connectedProviders = [...filterData];
 
-                connectedProviders = [...filterData];
-
-                console.log(session.sessionId + "disconnect");
-            }
+                    console.log(session.sessionId + "disconnect");
+                }
+            }, 60000);
         } catch (e) {
             console.log("Error", e);
         }
