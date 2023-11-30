@@ -297,12 +297,13 @@ socketIO.on("connection", (socket) => {
         try {
             // socket is disconnected
             console.log("user disconnect", userId);
+            let localConnectedProviders = [...connectedProviders];
             setTimeout(async () => {
-                let isSessionExits = connectedProviders.findIndex((ele) => ele.userId == userId);
+                let isSessionExits = localConnectedProviders.findIndex((ele) => ele.userId == userId);
 
                 console.log("isSessionExits", isSessionExits > -1 ? "true" : "false");
                 if (isSessionExits > -1) {
-                    const session = connectedProviders[isSessionExits];
+                    const session = localConnectedProviders[isSessionExits];
                     console.log("abandoned", session);
 
                     const SessionUpdate = Vtiger.UpdateSessionStatus(session.token, session.sessionId, session.env);
@@ -313,9 +314,9 @@ socketIO.on("connection", (socket) => {
 
                     await Promise.allSettled([SessionUpdate, EndZoom]);
 
-                    let filterData = connectedProviders.filter((ele) => ele.sessionId != session.sessionId);
+                    let filterData = localConnectedProviders.filter((ele) => ele.sessionId != session.sessionId);
 
-                    connectedProviders = [...filterData];
+                    localConnectedProviders = [...filterData];
 
                     console.log(session.sessionId + "disconnect");
                 }
