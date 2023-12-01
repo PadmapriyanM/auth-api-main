@@ -240,9 +240,9 @@ let ActiveUsers = [];
 socketIO.on("connection", (socket) => {
     // console.log(`⚡: ${socket.id} user just connected!`);
 
-    console.log("user id", socket.handshake?.headers?.auth);
+    console.log("user id", socket.handshake?.auth?.userId);
 
-    const userId = socket.handshake?.headers?.auth;
+    const userId = socket.handshake?.auth?.userId;
 
     if (userId) {
         ActiveUsers.push(userId);
