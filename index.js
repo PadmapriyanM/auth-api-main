@@ -235,12 +235,18 @@ socketIO.listen(server);
 
 let connectedProviders = [];
 
+let ActiveUsers = [];
+
 socketIO.on("connection", (socket) => {
     // console.log(`⚡: ${socket.id} user just connected!`);
 
-    console.log("user id", socket.handshake.auth);
+    console.log("user id", socket.handshake?.headers?.auth);
 
-    const userId = socket.handshake?.auth?.userId;
+    const userId = socket.handshake?.headers?.auth;
+
+    if (userId) {
+        ActiveUsers.push(userId);
+    }
 
     socket.on("message", function (data) {
         console.log("Message received ", data);
@@ -297,28 +303,37 @@ socketIO.on("connection", (socket) => {
         try {
             // socket is disconnected
             console.log("user disconnect", userId);
+            let index = ActiveUsers.indexOf(userId);
+            if (index !== -1) {
+                ActiveUsers.splice(index, 1);
+            }
             let localConnectedProviders = [...connectedProviders];
             setTimeout(async () => {
-                let isSessionExits = localConnectedProviders.findIndex((ele) => ele.userId == userId);
+                let index = ActiveUsers.indexOf(userId);
+                if (index == -1) {
+                    console.log("session InActive");
 
-                console.log("isSessionExits", isSessionExits > -1 ? "true" : "false");
-                if (isSessionExits > -1) {
-                    const session = localConnectedProviders[isSessionExits];
-                    console.log("abandoned", session);
+                    let isSessionExits = localConnectedProviders.findIndex((ele) => ele.userId == userId);
 
-                    const SessionUpdate = Vtiger.UpdateSessionStatus(session.token, session.sessionId, session.env);
+                    console.log("isSessionExits", isSessionExits > -1 ? "true" : "false");
+                    if (isSessionExits > -1) {
+                        const session = localConnectedProviders[isSessionExits];
+                        console.log("abandoned", session);
 
-                    const EndZoom = EndZoomMeeting(session?.meetingId);
+                        const SessionUpdate = Vtiger.UpdateSessionStatus(session.token, session.sessionId, session.env);
 
-                    socketIO.emit("abandonedzoom", session);
+                        const EndZoom = EndZoomMeeting(session?.meetingId);
 
-                    await Promise.allSettled([SessionUpdate, EndZoom]);
+                        socketIO.emit("abandonedzoom", session);
 
-                    let filterData = localConnectedProviders.filter((ele) => ele.sessionId != session.sessionId);
+                        await Promise.allSettled([SessionUpdate, EndZoom]);
 
-                    localConnectedProviders = [...filterData];
+                        let filterData = localConnectedProviders.filter((ele) => ele.sessionId != session.sessionId);
 
-                    console.log(session.sessionId + "disconnect");
+                        localConnectedProviders = [...filterData];
+
+                        console.log(session.sessionId + "disconnect");
+                    }
                 }
             }, 60000);
         } catch (e) {
