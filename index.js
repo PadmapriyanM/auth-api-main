@@ -309,7 +309,7 @@ socketIO.on("connection", (socket) => {
                 ActiveUsers.splice(index, 1);
                 console.log("Current User", ActiveUsers);
 
-                let localConnectedProviders = [...connectedProviders];
+                let localConnectedProviders = connectedProviders.filter((e) => e?.userId == userId);
                 setTimeout(async () => {
                     let index = ActiveUsers.indexOf(userId);
                     if (index == -1) {
@@ -333,7 +333,7 @@ socketIO.on("connection", (socket) => {
                                 console.log(res);
                             });
 
-                            let filterData = localConnectedProviders.filter((ele) => ele.sessionId != session.sessionId);
+                            let filterData = connectedProviders.filter((ele) => ele.sessionId != session.sessionId);
 
                             localConnectedProviders = [...filterData];
 
