@@ -335,7 +335,7 @@ socketIO.on("connection", (socket) => {
 
                             let filterData = connectedProviders.filter((ele) => ele.sessionId != session.sessionId);
 
-                            localConnectedProviders = [...filterData];
+                            connectedProviders = [...filterData];
 
                             console.log(session.sessionId + "disconnect");
                         }
