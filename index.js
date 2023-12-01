@@ -305,37 +305,43 @@ socketIO.on("connection", (socket) => {
             console.log("user disconnect", userId);
             let index = ActiveUsers.indexOf(userId);
             if (index !== -1) {
+                console.log("Previous User", ActiveUsers);
                 ActiveUsers.splice(index, 1);
-            }
-            let localConnectedProviders = [...connectedProviders];
-            setTimeout(async () => {
-                let index = ActiveUsers.indexOf(userId);
-                if (index == -1) {
-                    console.log("session InActive");
+                console.log("Current User", ActiveUsers);
 
-                    let isSessionExits = localConnectedProviders.findIndex((ele) => ele.userId == userId);
+                let localConnectedProviders = [...connectedProviders];
+                setTimeout(async () => {
+                    let index = ActiveUsers.indexOf(userId);
+                    if (index == -1) {
+                        console.log("session InActive");
 
-                    console.log("isSessionExits", isSessionExits > -1 ? "true" : "false");
-                    if (isSessionExits > -1) {
-                        const session = localConnectedProviders[isSessionExits];
-                        console.log("abandoned", session);
+                        let isSessionExits = localConnectedProviders.findIndex((ele) => ele.userId == userId);
 
-                        const SessionUpdate = Vtiger.UpdateSessionStatus(session.token, session.sessionId, session.env);
+                        console.log("isSessionExits", isSessionExits > -1 ? "true" : "false");
+                        if (isSessionExits > -1) {
+                            const session = localConnectedProviders[isSessionExits];
+                            console.log("abandoned", session);
 
-                        const EndZoom = EndZoomMeeting(session?.meetingId);
+                            const SessionUpdate = Vtiger.UpdateSessionStatus(session.token, session.sessionId, session.env);
 
-                        socketIO.emit("abandonedzoom", session);
+                            const EndZoom = EndZoomMeeting(session?.meetingId);
 
-                        await Promise.allSettled([SessionUpdate, EndZoom]);
+                            socketIO.emit("abandonedzoom", session);
 
-                        let filterData = localConnectedProviders.filter((ele) => ele.sessionId != session.sessionId);
+                            let data = await Promise.allSettled([SessionUpdate, EndZoom]);
+                            data.forEach((res) => {
+                                console.log(res);
+                            });
 
-                        localConnectedProviders = [...filterData];
+                            let filterData = localConnectedProviders.filter((ele) => ele.sessionId != session.sessionId);
 
-                        console.log(session.sessionId + "disconnect");
+                            localConnectedProviders = [...filterData];
+
+                            console.log(session.sessionId + "disconnect");
+                        }
                     }
-                }
-            }, 60000);
+                }, 20000);
+            }
         } catch (e) {
             console.log("Error", e);
         }

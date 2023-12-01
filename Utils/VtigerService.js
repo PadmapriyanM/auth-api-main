@@ -4,6 +4,7 @@ const https = require("https");
 
 const UpdateSessionStatus = (token, sessionId, env) => {
     return new Promise((resole, reject) => {
+        console.log("truggered", sessionId);
         const responceObject = {
             statusCode: 0,
             message: "",
