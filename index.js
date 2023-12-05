@@ -268,82 +268,82 @@ socketIO.on("connection", (socket) => {
     });
 
     socket.on("zoomcall", function (data) {
-        let isSessionExits = connectedProviders.findIndex((ele) => ele.sessionId == data.sessionId && ele.role == data.role);
-        if (isSessionExits > -1) {
-            console.log("updated", data);
-            let index = isSessionExits;
+        // let isSessionExits = connectedProviders.findIndex((ele) => ele.sessionId == data.sessionId && ele.role == data.role);
+        // if (isSessionExits > -1) {
+        //     console.log("updated", data);
+        //     let index = isSessionExits;
 
-            connectedProviders.splice(index, 1, data);
-        } else {
-            console.log("pushed", data);
-            connectedProviders.push(data);
-        }
+        //     connectedProviders.splice(index, 1, data);
+        // } else {
+        //     console.log("pushed", data);
+        //     connectedProviders.push(data);
+        // }
     });
 
     socket.on("zoomendall", function (data) {
-        if (data.sessionId) {
-            let filterData = connectedProviders.filter((ele) => ele.sessionId != data.sessionId);
-            connectedProviders = [...filterData];
-        }
+        // if (data.sessionId) {
+        //     let filterData = connectedProviders.filter((ele) => ele.sessionId != data.sessionId);
+        //     connectedProviders = [...filterData];
+        // }
     });
 
     socket.on("zoomend", (data) => {
-        let isSessionExits = connectedProviders.findIndex((ele) => ele.sessionId == data.sessionId && ele.role == data.role);
-        console.log("zoom end", isSessionExits > -1 ? "true" : "false");
-        if (isSessionExits > -1) {
-            let index = isSessionExits;
-            console.log(connectedProviders[index], "connectedProviders");
-            connectedProviders.splice(index, 1);
+        // let isSessionExits = connectedProviders.findIndex((ele) => ele.sessionId == data.sessionId && ele.role == data.role);
+        // console.log("zoom end", isSessionExits > -1 ? "true" : "false");
+        // if (isSessionExits > -1) {
+        //     let index = isSessionExits;
+        //     console.log(connectedProviders[index], "connectedProviders");
+        //     connectedProviders.splice(index, 1);
 
-            socketIO.emit("zoomendsuccess", data);
-        }
+        //     socketIO.emit("zoomendsuccess", data);
+        // }
     });
 
     socket.on("disconnect", async function (data) {
-        try {
-            // socket is disconnected
-            console.log("user disconnect", userId);
-            let index = ActiveUsers.indexOf(userId);
-            if (index !== -1) {
-                console.log("Previous User", ActiveUsers);
-                ActiveUsers.splice(index, 1);
-                console.log("Current User", ActiveUsers);
+        // try {
+        //     // socket is disconnected
+        //     console.log("user disconnect", userId);
+        //     let index = ActiveUsers.indexOf(userId);
+        //     if (index !== -1) {
+        //         console.log("Previous User", ActiveUsers);
+        //         ActiveUsers.splice(index, 1);
+        //         console.log("Current User", ActiveUsers);
 
-                let localConnectedProviders = connectedProviders.filter((e) => e?.userId == userId);
-                setTimeout(async () => {
-                    let index = ActiveUsers.indexOf(userId);
-                    if (index == -1) {
-                        console.log("session InActive");
+        //         let localConnectedProviders = connectedProviders.filter((e) => e?.userId == userId);
+        //         setTimeout(async () => {
+        //             let index = ActiveUsers.indexOf(userId);
+        //             if (index == -1) {
+        //                 console.log("session InActive");
 
-                        let isSessionExits = localConnectedProviders.findIndex((ele) => ele.userId == userId);
+        //                 let isSessionExits = localConnectedProviders.findIndex((ele) => ele.userId == userId);
 
-                        console.log("isSessionExits", isSessionExits > -1 ? "true" : "false");
-                        if (isSessionExits > -1) {
-                            const session = localConnectedProviders[isSessionExits];
-                            console.log("abandoned", session);
+        //                 console.log("isSessionExits", isSessionExits > -1 ? "true" : "false");
+        //                 if (isSessionExits > -1) {
+        //                     const session = localConnectedProviders[isSessionExits];
+        //                     console.log("abandoned", session);
 
-                            const SessionUpdate = Vtiger.UpdateSessionStatus(session.token, session.sessionId, session.env);
+        //                     const SessionUpdate = Vtiger.UpdateSessionStatus(session.token, session.sessionId, session.env);
 
-                            const EndZoom = EndZoomMeeting(session?.meetingId);
+        //                     const EndZoom = EndZoomMeeting(session?.meetingId);
 
-                            socketIO.emit("abandonedzoom", session);
+        //                     socketIO.emit("abandonedzoom", session);
 
-                            let data = await Promise.allSettled([SessionUpdate, EndZoom]);
-                            data.forEach((res) => {
-                                console.log(res);
-                            });
+        //                     let data = await Promise.allSettled([SessionUpdate, EndZoom]);
+        //                     data.forEach((res) => {
+        //                         console.log(res);
+        //                     });
 
-                            let filterData = connectedProviders.filter((ele) => ele.sessionId != session.sessionId);
+        //                     let filterData = connectedProviders.filter((ele) => ele.sessionId != session.sessionId);
 
-                            connectedProviders = [...filterData];
+        //                     connectedProviders = [...filterData];
 
-                            console.log(session.sessionId + "disconnect");
-                        }
-                    }
-                }, 20000);
-            }
-        } catch (e) {
-            console.log("Error", e);
-        }
+        //                     console.log(session.sessionId + "disconnect");
+        //                 }
+        //             }
+        //         }, 50000);
+        //     }
+        // } catch (e) {
+        //     console.log("Error", e);
+        // }
     });
 });
