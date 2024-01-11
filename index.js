@@ -163,7 +163,7 @@ app.post("/meetingdetails", async (req, res) => {
                 meetingId: req.body.meetingId,
             };
             const response = await getMeetingDetails(Data);
-            console.log(`meetingId id ${meetingId}-->`, response);
+            console.log(`meetingId id ${req.body?.meetingId}-->`, response);
             res.send(response);
         } else {
             res.status(404).send({
