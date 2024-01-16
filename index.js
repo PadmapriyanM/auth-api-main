@@ -98,6 +98,28 @@ const getMeetingDetails = async (data) => {
     return response;
 };
 
+const getInviteLink = async (data) => {
+    const meetingId = data.meetingId;
+
+    const request = await ZoomApi(
+        `meetings/${meetingId}/invite_links`,
+        "POST",
+        {
+            attendees: [
+                {
+                    name: "Interperter",
+                },
+            ],
+        },
+        null
+    );
+
+    const response = await request.data;
+    response.result = "success";
+
+    return response;
+};
+
 const EndZoomMeeting = async (meetingId) => {
     if (!meetingId) {
         throw new Error("Meeting Id cannot be empty");
@@ -164,6 +186,25 @@ app.post("/meetingdetails", async (req, res) => {
             };
             const response = await getMeetingDetails(Data);
             console.log(`meetingId id ${req.body?.meetingId}-->`, response);
+            res.send(response);
+        } else {
+            res.status(404).send({
+                error: "meeting id missing",
+            });
+        }
+    } catch (e) {
+        console.log("error", e);
+        res.status(500).send({ error: e });
+    }
+});
+
+app.post("/invitelink", async (req, res) => {
+    try {
+        if (typeof req.body?.meetingId == "string" && req.body?.meetingId.length > 0) {
+            const Data = {
+                meetingId: req.body.meetingId,
+            };
+            const response = await getInviteLink(Data);
             res.send(response);
         } else {
             res.status(404).send({
