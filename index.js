@@ -107,7 +107,7 @@ const getInviteLink = async (data) => {
         {
             attendees: [
                 {
-                    name: "Interperter",
+                    name: data?.name ?? "Interperter",
                 },
             ],
         },
@@ -203,6 +203,7 @@ app.post("/invitelink", async (req, res) => {
         if (typeof req.body?.meetingId == "string" && req.body?.meetingId.length > 0) {
             const Data = {
                 meetingId: req.body.meetingId,
+                name: req.body.name,
             };
             const response = await getInviteLink(Data);
             res.send(response);
@@ -281,10 +282,6 @@ let connectedProviders = [];
 let ActiveUsers = [];
 
 socketIO.on("connection", (socket) => {
-    // console.log(`⚡: ${socket.id} user just connected!`);
-
-    console.log("user id", socket.handshake?.auth?.userId);
-
     const userId = socket.handshake?.auth?.userId;
 
     if (userId) {
